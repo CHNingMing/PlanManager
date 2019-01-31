@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1547945253 source:/opt/CWork/2019_1_13GtkHelloWorld/CommandNode/main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1548579918 source:/root/CommandNode/main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+

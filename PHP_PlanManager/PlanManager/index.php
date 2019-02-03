@@ -25,8 +25,8 @@
                 echo "<tr>";
                 echo "<td>{$row['plan_name']}</td>";
                 echo "<td>{$row['budgetData']}</td>";
-                echo "<td><a>编辑</a></td>";
-                echo "<td><a>删除</a></td>";
+                echo "<td><a href='#'>编辑</a></td>";
+                echo "<td><a href='#'>删除</a></td>";
                 echo "</tr>";
             }
         }

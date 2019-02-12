@@ -16,3 +16,27 @@ create table date_item(
     begin_date datetime not null,		-- 开始时间
     end_date datetime					-- 结束时间
 );
+
+-- 执行SQL
+insert into
+	plan_item(
+		plan_name,
+        budgetDate,
+        plan_state,
+        del_flag)
+values
+	(
+		'任务3',
+        '50',
+        0,
+        0
+	);
+
+
+insert into date_item(plan_id,begin_date) value(4,now());
+
+update date_item set end_date=now() where plan_id = 4 and date_id = 2
+
+
+
+

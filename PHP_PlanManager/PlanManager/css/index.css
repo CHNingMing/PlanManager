@@ -1,0 +1,7 @@
+@CHARSET "UTF-8";
+.notdate{
+	text-align:center;
+}
+.planState_fail{
+	color:red;
+}

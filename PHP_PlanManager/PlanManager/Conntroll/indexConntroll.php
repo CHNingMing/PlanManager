@@ -7,7 +7,7 @@
         connDatabase_service();
     }
     function getPlanItem(){
-        getPlanItem_service();
+        getPlanItemHtml_service();
     }
     function currDayTime(){
         currDayTime_service();
@@ -25,5 +25,6 @@
         }
         
     }
+    
     
 ?>

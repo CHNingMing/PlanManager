@@ -1,42 +1,39 @@
 <?php
     require_once 'data/indexData.php';
+    //连接数据库
     function connDatabase_service(){
         connDatabase_data();
     }
-    //继承数据库链接对象
-    
-    
-    //获取任务列表
-    function getPlanItem_service(){
+    function getPlanItem_service( $planType,$planState,$planName ){
         global  $conn;
         $execSearchSql = "
         select
-        	planItem.plan_id,
-            begin_date,
-            end_date,
-            plan_name,
-            plan_state,
-            budgetDate
-        from
-        	date_item dateItem
-            right join plan_item planItem on planItem.plan_id = dateItem.plan_id
+        plan_id,
+        plan_name,
+        plan_state,
+        budgetDate
+         FROM
+                ym970u.plan_item
         where del_flag = 0
         ";
-        
-        
-        //传参打开页面情况
-        if( sizeof($_POST) > 0 ){
-            
-            if( $_POST['planType'] == "curr_day" ){
-                $execSearchSql = $execSearchSql." and date_format(begin_date,'%y-%m-%d') = date_format(now(),'%y-%m-%d')";
+        if( $planType != null || $planState != null || $planName != null ){
+            if( $planType == "curr_day" ){
+                $execSearchSql = $execSearchSql." and date_format(create_date,'%y-%m-%d') = date_format(now(),'%y-%m-%d')";
             }
-            if( $_POST['planState'] != -1 ){
-                $execSearchSql = $execSearchSql." and plan_state = ".$_POST['planState'];
+            if( $planState != -1 ){
+                $execSearchSql = $execSearchSql." and plan_state = {$planState}";
             }
-            
+            if( $planName != null  && sizeof($planName) > 0 ){
+                $execSearchSql = $execSearchSql." like plan_name '%{$planName}%'";
+            }
         }
-        
         $result = mysqli_query($conn, $execSearchSql);
+        return $result;
+    }
+    
+    //获取任务列表
+    function getPlanItemHtml_service(){
+        $result = getPlanItem_service();
         if( !$result ){
             echo "<tr><td colspan='4' class='notdate'>没有相关数据!</td></tr>";
             return;
@@ -47,20 +44,21 @@
                 echo "<td>{$row['plan_name']}</td>";
                 echo "<td>{$row['budgetDate']}</td>";
                 echo "<td>";
+                //拼接状态列，不同状态不同class,不同planid
+                $plan_id = $row['plan_id'];
+                $planStateStr = "<span planID='".$plan_id ."'";
                 switch ( $row['plan_state'] ){
                     case 0:
-                        echo "未开始";
+                        $planStateStr = $planStateStr." class='am-badge am-radius' title='点击开始任务' ><a class='plan_state' onclick='updatePlanState({$plan_id},1)' href='#'>未开始</a></span>";
                         break;
                     case 1:
-                        echo "进行中..";
+                        $planStateStr = $planStateStr." title='点击关闭任务' class='am-badge am-badge-secondary am-radius'><a class='plan_state'  href='#'>进行中</a></span>";
                         break;
                     case 2:
-                        echo "成功";
-                        break;
-                    case 3:
-                        echo "<span class='planState_fail'>失败</span>";
+                        $planStateStr = $planStateStr." class='am-badge am-badge-success am-radius'>成功</span>";
                         break;
                 }
+                echo $planStateStr;
                 echo "</td>";
                 echo "<td><a href='#'>编辑</a>";
                 echo "&nbsp; | &nbsp;";
@@ -73,7 +71,7 @@
     function currDayTime_service(){
         global  $conn;
         
-        $result = mysqli_query($conn, "SELECT date_id,plan_id,timediff(end_date,begin_date) currDayTime FROM date_item where date_format(begin_date,'%y-%m-%d') = date_format(now(),'%y-%m-%d');");
+        $result = mysqli_query($conn, "SELECT left(sum(timediff(end_date,begin_date)),5) currDayTime FROM date_item where date_format(begin_date,'%y-%m-%d') = date_format(now(),'%y-%m-%d');");
         if( mysqli_num_rows($result) > 0 ){
             $rows =  mysqli_fetch_assoc($result);
             echo $rows['currDayTime'];
@@ -88,10 +86,29 @@
      * @param unknown $budgetDate
      */
     function createPlan_service( $planName,$budgetDate ){
-        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag) values('{$planName}','{$budgetDate}',0,0); 
-                               SELECT LAST_INSERT_ID();";
-        
-        
+        global $conn;
+        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag) values('{$planName}','{$budgetDate}',0,0)";
+        $result = mysqli_query($conn, $crePlanSql);
+        if( $result ){
+            echo "成功";
+            return;
+        }
+        echo '创建失败';
     }
+    /***
+     * 修改指定任务状态
+     * @param unknown $planId 任务ID
+     */
+    function updateState( $planId,$planState ){
+        global $conn;
+        $updatePlanState = "update plan_item set plan_state = '{$planState}' where plan_id =".$planId;
+        $insertPlanTime = "insert into date_item(plan_id,begin_date) values({$planId},now())";
+        //设置状态
+        mysqli_query($conn,$updatePlanState);
+        //插入时间段
+        mysqli_query($conn, $insertPlanTime);
+    }
+    
+    
     
 ?>

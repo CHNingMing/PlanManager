@@ -8,7 +8,7 @@
 
 <html>
 	<head>
-		<title>创建任务</title>
+		<title>编辑任务</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<!-- VUE -->
 		<script type="text/javascript" src="js/vue.js"></script>
@@ -34,7 +34,7 @@
 				</tr>
 				<tr>
 					<td colspan="2">
-						<input type="submit" class="am-btn am-btn-default am-radius am-icon-search" value="创建" />
+						<input type="submit" class="am-btn am-btn-default am-radius am-icon-search" value="保存" />
 					</td>
 				</tr>
 			</table>

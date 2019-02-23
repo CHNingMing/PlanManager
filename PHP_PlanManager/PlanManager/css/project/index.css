@@ -2,6 +2,7 @@
 .notdate{
 	text-align:center;
 }
-.planState_fail{
-	color:red;
+
+.plan_state {
+	color:#ffffff;
 }

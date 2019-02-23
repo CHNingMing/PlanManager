@@ -31,6 +31,7 @@ values
         0,
         0
 	);
+SELECT LAST_INSERT_ID();
 
 
 insert into date_item(plan_id,begin_date) value(4,now());

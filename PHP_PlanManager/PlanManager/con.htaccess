@@ -1,9 +1,0 @@
-
-<IfModule mod_rewrite.c>
-	 RewriteEngine on
-	RewriteRule ^indexControll$ PlanManager/indexControll.php
-	ErrorDocument 404 /404.txt
-</IfModule>
-
-
-

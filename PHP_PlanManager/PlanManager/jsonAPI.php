@@ -115,6 +115,42 @@
         }
         return $param;
     }
-    
-    
+    /**
+     * 创建任务
+     * @param unknown $planName
+     * @param unknown $budgetDate
+     */
+    function createPlan( $planName,$budgetDate ){
+        $result = createPlan_service($planName,$budgetDate);
+        $resp = new ResponePojo();
+        if( $result ){
+            echo $resp->getJson();
+            return;
+        }
+        $resp->put("status", 1);
+        echo $resp;
+    }
+    /**
+     * 设置删除标记
+     * @param unknown $planId
+     */
+    function del_plan( $planId ){
+        $resp = new ResponePojo();
+        if ( del_Plan_service( $planId ) ){
+            $resp->put("msg", "删除{$planId}成功！");
+            echo $resp->getJson();
+            return;
+        }
+        echo $resp->getJson();
+    }
+
+    /***
+     * 获取任务时间段
+     * @param $planid 任务id
+     */
+    function planTimeSlot( $planid ){
+
+
+    }
+
 ?>

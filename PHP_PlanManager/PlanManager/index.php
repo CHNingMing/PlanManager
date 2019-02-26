@@ -66,10 +66,10 @@
         			?>
         		</select>
         		
-        		<button class="am-btn am-btn-default am-radius am-icon-check" onclick="searchPlanList()" >搜索</button>
+        		<button class="am-btn am-btn-default am-radius am-icon-search" onclick="searchPlanList()" >搜索</button>
         		
         </form>
-        <button class="am-btn am-btn-default am-radius am-icon-search" onclick="location.href='createNewPlan.php'" >新建任务</button>
+        <button class="am-btn am-btn-default am-radius am-icon-check" onclick="openWin('createPlanWin')" >新建任务</button>
         <br />
 		<table id="_table"  border="1" class="am-table am-table-bordered am-table-radius am-table-striped am-table-hover">
 			<thead>
@@ -87,8 +87,8 @@
 					<td>{{table_data.budgetDate}}</td>
 					<td v-html="table_data.plan_state"></td>
 					<td>
-						<a v-bind:planid="table_data.plan_id" href="#">编辑</a> | 
-						<a v-bind:planid="table_data.plan_id" href="#">删除</a>
+						<a v-bind:f_planid="table_data.plan_id" onclick="openWin('editplan_win',this,plan_edit_ready)" href="#">编辑</a> |
+						<a v-bind:f_planid="table_data.plan_id" v-bind:f_planname="table_data.plan_name" onclick="openWin('message_win_del',this,del_plan_ready)" href="#">删除</a>
 					</td>
 				</tr>
 				<tr v-if="!tables_data_display">
@@ -98,6 +98,96 @@
         	</tbody>
 		</table>
 	</div>
+	
+	<!-- 窗口部分 -->
+    <!-- 删除提示窗口 -->
+	<div class="message_win" id="message_win_del">
+		<table>
+			<tr>
+				<td><span id="msg">是否删除？</span></td>
+			</tr>
+			<tr>
+				<td>
+					<button class="am-btn am-btn-default am-radius am-icon-check" onclick="del_plan()" >是</button>
+				</td>
+				<td>
+					<button class="am-btn am-btn-default am-radius am-icon-close" onclick="closeWin('message_win_del')" >不删</button>
+				</td>
+			</tr>
+		</table>
+		<br />
+	</div>
+	<!-- 添加任务窗口 -->
+	<div id="createPlanWin" class="close">
+    	<!-- 模糊层 -->
+    	<div class="win_vague"></div>
+    	<div class="window">
+    		<!-- 标题 -->
+    		<div class="title">
+    			创建任务
+    			<a href="#" class="closeBtn" onclick="closeWin('createPlanWin')" >X</a>
+    		</div>
+    		<!-- 正文 -->
+    		<div class="context">
+    		<form id="crePlanForm" onsubmit="return false;" >
+    			<table class="form_table">
+                	<tr>
+                		<td>任务名称：</td>
+                		<td>
+                			<input name="planName" class="am-form-field" textarea="请输入任务名称..." />
+                		</td>
+                	</tr>
+                	<tr>
+                		<td>预计时间：</td>
+                		<td>
+                			<input name="budgetDate" class="am-form-field" />
+                		</td>
+                	</tr>
+                	<tr>
+                		<td colspan='2' style="text-align:center;">
+                			<button class="am-btn am-btn-default am-radius am-icon-check"  style="margin-top:5%;width:100%;" onclick="createPlan()" >创建</button>
+                		</td>
+                	</tr>
+                </table>
+            </form>
+    		</div>
+    	</div>
+	</div>
+    <!-- 添加任务窗口 END -->
+
+    <!-- 编辑列表窗口 -->
+    <div id="editplan_win" class="close">
+        <div class="win_vague"></div>
+        <div class="window">
+            <div class="title">
+                任务编辑
+                <a href="#" class="closeBtn" onclick="closeWin('editplan_win')" >X</a>
+            </div>
+            <div class="context">
+                <div id="planDateList">
+                    <table v-for="">
+                        <tr>
+                            <td>开始时间:</td>
+                            <td>2019-02-01 10:10:00</td>
+                            <td> &nbsp; | &nbsp; </td>
+                            <td>结束时间:</td>
+                            <td>2019-02-10 10:10:00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">
+                                <div class="am-progress am-progress-striped">
+                                    <div class="am-progress-bar am-progress-bar-secondary" style="width: 30%">耗时:30分/100分</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 编辑列表窗口 END -->
+
+	<!-- 窗口部分 END -->
 	</body>
 </html>
 <script>
@@ -119,59 +209,18 @@
 		});
 		searchPlanList();
 	}
-	
 
 
-	function searchPlanList(){
-		var searchForm = document.getElementById('searchForm');
-		//取出vue对象
-		var vue = document.getElementById('_table').__vue__;
-		//任务列表
-		var reqlen = <?php echo sizeof($_POST) ?>;
-		var param = {};
-		var doms = searchForm.querySelectorAll('input,select');
-		for( var dom of doms ){
-			param[dom.name] = dom.value;
-		}
-		/*
-		if( reqlen > 0 ){
-			param.planType = '<?php echo $_POST["planType"] ?>';
-			param.planState = '<?php echo $_POST["planState"] ?>';
-			param.planName = '<?php echo $_POST['planName']?>';
-		}
-		*/
-		getRequest('json_api/getPlanList',param,function(data){
-			//请求数组
-			var table_data = data.body;
-			//vue维护数组
-			var datas = vue.tables_data;
-			if( table_data.status == 1 ){
-				vue.tables_data.splice(0);
-			}
-			for( var data of table_data.planList ){
-				var span_str = "<span planid='"+data.plan_id+"' ";
-				switch( data.plan_state ){
-					case "0":
-						span_str+="title='点击开始任务' class='am-badge am-radius' <a class='plan_state' onclick='updatePlanState("+data.plan_id+",1)' href='#'>未开始";
-					break;
-					case "1":
-						span_str+="title='点击关闭任务' class='am-badge am-badge-secondary am-radius'><a class='plan_state'  href='#'>进行中";
-					break;
-					case "2":
-						span_str+="class='am-badge am-badge-success am-radius'>成功";
-					break;
-				}
-				span_str+="</a></span>";
-				data.plan_state = span_str;
-			}
-			vue.tables_data = table_data.planList;
-		});
-	}
-	//搜索任务方法
-	function search_plan(plan_name){
-		postReq();
-	}
-	var table_datas ;
+    /* 编辑任务 */
+    function plan_edit_ready(window){
+        var plan_id = window.getAttribute('f_planid');
+
+
+
+    }
+
+    /* 编辑任务 END */
+
 </script>
 
 

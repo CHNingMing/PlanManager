@@ -23,8 +23,8 @@
             if( $planState != -1 ){
                 $execSearchSql = $execSearchSql." and plan_state = {$planState}";
             }
-            if( $planName != null  && sizeof($planName) > 0 ){
-                $execSearchSql = $execSearchSql." like plan_name '%{$planName}%'";
+            if( sizeof($planName) > 0 ){
+                $execSearchSql = $execSearchSql." and plan_name like  '%{$planName}%'";
             }
         }
         $result = mysqli_query($conn, $execSearchSql);
@@ -87,28 +87,41 @@
      */
     function createPlan_service( $planName,$budgetDate ){
         global $conn;
-        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag) values('{$planName}','{$budgetDate}',0,0)";
-        $result = mysqli_query($conn, $crePlanSql);
-        if( $result ){
-            echo "成功";
-            return;
-        }
-        echo '创建失败';
+        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag,create_date) values('{$planName}','{$budgetDate}',0,0,now())";
+        return mysqli_query($conn, $crePlanSql);
     }
+
     /***
-     * 修改指定任务状态
-     * @param unknown $planId 任务ID
+     * 修改任务状态
+     * @param $planId
+     * @param $planState　
+     * @return bool|mysqli_result|void　
      */
     function updateState( $planId,$planState ){
         global $conn;
         $updatePlanState = "update plan_item set plan_state = '{$planState}' where plan_id =".$planId;
-        $insertPlanTime = "insert into date_item(plan_id,begin_date) values({$planId},now())";
+        $insertPlanTime = "";
+        if( $planState == 1 ){
+            //开始任务
+            $insertPlanTime = "insert into date_item(plan_id,begin_date) values({$planId},now())";
+        }else{
+            //结束任务
+            $insertPlanTime = "update date_item set end_date = now() where plan_id = {$planId}";
+        }
         //设置状态
         mysqli_query($conn,$updatePlanState);
         //插入时间段
-        mysqli_query($conn, $insertPlanTime);
+        return mysqli_query($conn, $insertPlanTime);
     }
     
-    
+    function del_Plan_service( $planid ){
+        global $conn;
+        $delSql = "update plan_item set del_flag = 1 where plan_id = {$planid}";
+        $result = mysqli_query($conn,$delSql);
+        if( $result ){
+            return true;
+        }
+        return false;
+    }
     
 ?>

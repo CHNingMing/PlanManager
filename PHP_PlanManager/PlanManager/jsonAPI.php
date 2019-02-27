@@ -120,8 +120,8 @@
      * @param unknown $planName
      * @param unknown $budgetDate
      */
-    function createPlan( $planName,$budgetDate ){
-        $result = createPlan_service($planName,$budgetDate);
+    function createPlan( $planName,$budgetDate,$planInfo ){
+        $result = createPlan_service($planName,$budgetDate,$planInfo);
         $resp = new ResponePojo();
         if( $result ){
             echo $resp->getJson();
@@ -149,8 +149,39 @@
      * @param $planid 任务id
      */
     function planTimeSlot( $planid ){
+        $resp = new ResponePojo();
+        $result = planTimeSlot_server($planid);
+        $planItem = array();
+        while( $plan = $result->fetch_object() ){
+            array_push($planItem,$plan);
+        }
+        if( !$result ){
+            $resp->put("status",1);
+            $resp->put("msg","查询失败！");
+            echo $resp->getJson();
+            return;
+        }
+        $resp->put("time_slot",$planItem);
+        echo $resp->getJson();
+    }
 
+    /**
+     * 查询指定任务
+     * @param $planId
+     */
+    function getPlanByPlanId( $planId ){
+        $resp = new ResponePojo();
+        $result = getPlanById_server($planId);
+        if( $result != null ){
 
+            $resp->put("plan",$result->fetch_object());
+            echo $resp->getJson();
+            return;
+        }
+        $resp->put("status",1);
+        $resp->put("msg","查询失败！");
+        echo $resp->getJson();
+        return;
     }
 
 ?>

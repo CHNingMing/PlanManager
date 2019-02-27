@@ -18,11 +18,9 @@
 	height:auto;
 	position:absolute;
 	left:40%;
-	top:50%;
+	top:-100%;
 	border:1px solid #AEEEEE;
 	background-color:#fff;
-	
-	display:none;
 }
 .message_win:before{
 	display:block;
@@ -38,12 +36,14 @@
 	height:auto;
 	position:absolute;
 	left:30%;
-	top:70px;
+	top:-110%;
 	background-color:#fff;
 	opacity:1;
 	z-index:3;
 	min-width:300px;
 	min-height:300px;
+	/*动画部分*/
+	transition:0.8s;
 }
 /* 标题 */
 .window .title{
@@ -75,12 +75,26 @@
 	top:0;
 	width:100%;
 	height:100%;
-	opacity:0.4;
+	opacity: 0.3;
 	background-color:#000;
 	z-index:2;
+
 }
 /* 创建任务窗口 END */
 
-.close{display:none;}
-.open{display:block;}
+.close{
+	display:none;
+}
+.open{
+	display:block;
+}
+
+.close_d{
+	top:-400px;
+	opacity: 0;
+}
+.close_s{
+	top:20%;
+	opacity: 1;
+}
 

@@ -85,9 +85,9 @@
      * @param unknown $planName
      * @param unknown $budgetDate
      */
-    function createPlan_service( $planName,$budgetDate ){
+    function createPlan_service( $planName,$budgetDate,$planInfo ){
         global $conn;
-        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag,create_date) values('{$planName}','{$budgetDate}',0,0,now())";
+        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag,create_date,plan_Info) values('{$planName}','{$budgetDate}',0,0,now(),'{$planInfo}')";
         return mysqli_query($conn, $crePlanSql);
     }
 
@@ -113,7 +113,7 @@
         //插入时间段
         return mysqli_query($conn, $insertPlanTime);
     }
-    
+    /*删除任务*/
     function del_Plan_service( $planid ){
         global $conn;
         $delSql = "update plan_item set del_flag = 1 where plan_id = {$planid}";
@@ -122,6 +122,26 @@
             return true;
         }
         return false;
+    }
+
+    /***
+     * 获取指定任务时间段
+     * @param $planId
+     */
+    function planTimeSlot_server( $planId ){
+        global $conn;
+        $planTime_sql = "SELECT begin_date,end_date,TIMESTAMPDIFF(minute,begin_date,end_date) as slot_time FROM date_item where plan_id = {$planId}";
+        return mysqli_query($conn,$planTime_sql);
+    }
+
+    /**
+     * 查询指定任务
+     * @param $planId
+     */
+    function getPlanById_server( $planId ){
+        global $conn;
+        $selPlanSql = "select plan_id,plan_name,budgetDate,plan_state,del_flag,create_date,plan_info from plan_item where plan_id = {$planId}";
+        return mysqli_query($conn,$selPlanSql);
     }
     
 ?>

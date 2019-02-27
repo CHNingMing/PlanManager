@@ -81,12 +81,12 @@
 				</tr>
 			</thead>
 			<tbody>
-			
 				<tr v-if="tables_data_display" v-for="table_data in tables_data">
 					<td>{{table_data.plan_name}}</td>
 					<td>{{table_data.budgetDate}}</td>
 					<td v-html="table_data.plan_state"></td>
 					<td>
+                        <a v-if="table_data.plan_status != 0" v-bind:f_planid="table_data.plan_id" onclick="openWin('editplan_win',this,see_plan)" href="#">查看&nbsp;|</a>
 						<a v-bind:f_planid="table_data.plan_id" onclick="openWin('editplan_win',this,plan_edit_ready)" href="#">编辑</a> |
 						<a v-bind:f_planid="table_data.plan_id" v-bind:f_planname="table_data.plan_name" onclick="openWin('message_win_del',this,del_plan_ready)" href="#">删除</a>
 					</td>
@@ -94,14 +94,13 @@
 				<tr v-if="!tables_data_display">
 					<td colspan="4">没有任务记录！</td>
 				</tr>
-			
         	</tbody>
 		</table>
 	</div>
 	
 	<!-- 窗口部分 -->
     <!-- 删除提示窗口 -->
-	<div class="message_win" id="message_win_del">
+	<div class="message_win close" id="message_win_del">
 		<table>
 			<tr>
 				<td><span id="msg">是否删除？</span></td>
@@ -118,14 +117,14 @@
 		<br />
 	</div>
 	<!-- 添加任务窗口 -->
-	<div id="createPlanWin" class="close">
+	<div id="createPlanWin">
     	<!-- 模糊层 -->
-    	<div class="win_vague"></div>
+    	<div class="win_vague close"></div>
     	<div class="window">
     		<!-- 标题 -->
     		<div class="title">
     			创建任务
-    			<a href="#" class="closeBtn" onclick="closeWin('createPlanWin')" >X</a>
+    			<a href="#" class="closeBtn am-close" onclick="closeWin('createPlanWin')" >X</a>
     		</div>
     		<!-- 正文 -->
     		<div class="context">
@@ -143,6 +142,14 @@
                 			<input name="budgetDate" class="am-form-field" />
                 		</td>
                 	</tr>
+                    <tr>
+                        <td colspan="4">任务详情：</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <textarea style="width:100%;min-height:200px" name="planInfo"></textarea>
+                        </td>
+                    </tr>
                 	<tr>
                 		<td colspan='2' style="text-align:center;">
                 			<button class="am-btn am-btn-default am-radius am-icon-check"  style="margin-top:5%;width:100%;" onclick="createPlan()" >创建</button>
@@ -155,32 +162,50 @@
 	</div>
     <!-- 添加任务窗口 END -->
 
-    <!-- 编辑列表窗口 -->
-    <div id="editplan_win" class="close">
-        <div class="win_vague"></div>
+    <!-- 编辑列表/查看列表窗口 -->
+    <div id="editplan_win" >
+        <div class="win_vague close"></div>
         <div class="window">
             <div class="title">
-                任务编辑
+                {{win_title}}
                 <a href="#" class="closeBtn" onclick="closeWin('editplan_win')" >X</a>
             </div>
             <div class="context">
                 <div id="planDateList">
-                    <table v-for="">
+                    <!-- 时间段 -->
+                    <table v-for="slot in timeSlot":key='slot.key'>
                         <tr>
                             <td>开始时间:</td>
-                            <td>2019-02-01 10:10:00</td>
+                            <td>{{slot.begin_date}}</td>
                             <td> &nbsp; | &nbsp; </td>
                             <td>结束时间:</td>
-                            <td>2019-02-10 10:10:00</td>
+                            <td>{{slot.end_date}}</td>
                         </tr>
-                        <tr>
+                        <tr v-if="allTime < 0">
                             <td colspan="5">
                                 <div class="am-progress am-progress-striped">
-                                    <div class="am-progress-bar am-progress-bar-secondary" style="width: 30%">耗时:30分/100分</div>
+                                    <div class="am-progress-bar am-progress-bar-secondary" style="width: 100%">
+                                        无时间限制 消耗:{{ slot.slot_time }}分钟
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr v-if="allTime > 0">
+                            <td colspan="5">
+                                <div class="am-progress am-progress-striped">
+                                    <div class="am-progress-bar" v-bind:class="{ 'am-progress-bar-danger': slot.slot_time/(allTime/100) > 100 }" v-bind:style="{width: (slot.slot_time/(allTime/100) > 100 ? 100 : slot.slot_time/(allTime/100)) +'%'}" >
+                                        耗时:{{slot.slot_time}}&nbsp;共:{{allTime}} 分钟
+                                        <span v-if="slot.slot_time/(allTime/100) > 100" class="am-badge am-badge-danger">
+                                            严重超时:{{ slot.slot_time - allTime }}分钟
+                                        </span>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
+
                     </table>
+                    <!-- 时间段 END -->
                 </div>
             </div>
         </div>
@@ -207,19 +232,54 @@
 				tables_data_display: true
 			}
 		});
+		var time_vue = new Vue({
+            el: '#editplan_win',
+            data:{
+                timeSlot:new Array(),   //时间段
+                win_title: '查看任务',  //窗口标题
+                allTime: 0     //预计时间
+            }
+        });
+
 		searchPlanList();
 	}
 
 
-    /* 编辑任务 */
+    /* 编辑/查看任务 */
+    //编辑任务
     function plan_edit_ready(window){
         var plan_id = window.getAttribute('f_planid');
+        console.log(plan_id);
 
+    }
+    //查看任务
+    function see_plan(windowa){
+        var plan_id = windowa.getAttribute('f_planid');
+        var vue = windowa.__vue__;
+        getRequest('json_api/planTimeSlot',{planid:plan_id},(data)=>{
+            /*
+                 win_title: '查看任务',
+                begin_date: 'xxx-xx-xx xx:xx:xx',
+                end_date: 'xxx-xx-xx xx:xx:xx',
+                timeSlot: 30,
+                allTime: 100
+             */
+            if( data.body.status == 0 ){
+                vue.$data.timeSlot = data.body.time_slot;
+                getRequest('json_api/getPlanByPlanId',{planId:plan_id},(planObj)=>{
+                    vue.$data.allTime = (planObj.body.status == 0 ? planObj.body.plan.budgetDate : 0);
+
+
+
+                });
+
+
+            }
+        });
 
 
     }
-
-    /* 编辑任务 END */
+    /* 编辑/查看任务 END */
 
 </script>
 

@@ -39,8 +39,17 @@ function getRequest(url, params,fun_succ,fun_err) {
  * @returns
  */
 function openWin(winid,even_dom,fun){
-	var window = document.getElementById(winid);
-	window.style.display = 'block';
+	var window_all = document.getElementById(winid);
+	//最大包裹层
+	window_all.classList.remove('close');
+	window_all.classList.add('open');
+	//窗口层
+	var window_win = window_all.querySelector('.window');
+    window_win.classList.remove('close_d');
+    window_win.classList.add('close_s');
+    //模糊层
+    var window_vague = window_all.querySelector('.win_vague');
+    window_vague.style.display = 'none';
 /*	if( even_dom != undefined && even_dom != null ){
 		window.even_dom = even_dom;
 	}*/
@@ -49,7 +58,7 @@ function openWin(winid,even_dom,fun){
 			var attr_str = attri.name;
 			//约定只会传f_开头属性
 			if( attr_str[0]=="f" && attr_str[1]=="_" ){
-				window.setAttribute(attri.name,attri.value);
+                window_all.setAttribute(attri.name,attri.value);
 			}
 		}
 	}
@@ -61,13 +70,32 @@ function openWin(winid,even_dom,fun){
 	}
 	//执行自定义函数
 	if( fun != undefined && fun != null ){
-		fun(window,even_dom);
+		fun(window_all,even_dom);
 	}
 }
 function closeWin(winid){
 	var window = document.getElementById(winid);
-	window.style.display = 'none';
-	document.onkeyup = undefined;
+	/*window.classList.remove('open');
+    window.classList.add('close');*/
+    //窗口
+	/*
+		window:普通窗口
+	*/
+	var window_win = window.querySelector('.window');
+	if( window_win == null ){
+        window.classList.remove('close_s')
+        window.classList.add('close_d');
+	}else{
+        window_win.classList.remove('close_s');
+        window_win.classList.add('close_d');
+	}
+    //模糊层
+	var window_vague = window.querySelector('.win_vague');
+	window_vague.style.display = 'none';
+
+	//删除ESC事件
+    document.onkeyup = function(){};
+    document.onkeyup = undefined;
 }
 //取出 form 内容
 function getFormParam(formId){
@@ -121,18 +149,23 @@ function searchPlanList(){
         }
         for( var data of table_data.planList ){
             var span_str = "<span planid='"+data.plan_id+"' ";
+            var successPlan_a = "<a title='点击完成任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",4)'  href='#'>完成</a>";
             switch( data.plan_state ){
                 case "0":
-                    span_str+="title='点击开始任务' class='am-badge am-radius'> <a class='plan_state' onclick='updatePlanState("+data.plan_id+",1)' href='#'>未开始";
+                    span_str+="title='点击开始任务' class='am-badge am-radius'> <a class='plan_state' onclick='updatePlanState("+data.plan_id+",1)' href='#'>未开始</a>";
                     break;
                 case "1":
-                    span_str+="title='点击关闭任务' class='am-badge am-badge-secondary am-radius'><a class='plan_state' onclick='updatePlanState("+data.plan_id+",2)'  href='#'>进行中";
+                    span_str+=">进行中<a title='点击暂停任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",2)'  href='#'>暂停</a>"+successPlan_a;
                     break;
-                case "2":
-                    span_str+="class='am-badge am-badge-success am-radius'>成功";
+				case "2":
+					span_str+=">已暂停<a title='点击继续任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",1)'>继续</a>"+successPlan_a
+					break;
+                case "4":
+                    span_str+="><a class='am-badge am-badge-success am-radius'>成功</a>";
                     break;
             }
-            span_str+="</a></span>";
+            span_str+="</span>";
+            data.plan_status = data.plan_state;
             data.plan_state = span_str;
         }
         vue.tables_data = table_data.planList;

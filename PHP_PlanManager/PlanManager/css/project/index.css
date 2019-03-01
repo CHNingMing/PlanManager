@@ -80,8 +80,14 @@
 	z-index:2;
 
 }
-/* 创建任务窗口 END */
 
+/*进度条无时间限制样式*/
+.noTileStyle{
+	background-color: #000c13;
+}
+
+
+/* 创建任务窗口 END */
 .close{
 	display:none;
 }

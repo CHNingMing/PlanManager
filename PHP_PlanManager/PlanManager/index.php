@@ -137,7 +137,7 @@
                 		</td>
                 	</tr>
                 	<tr>
-                		<td>预计时间：</td>
+                		<td>预计完成时间：</td>
                 		<td>
                 			<input name="budgetDate" class="am-form-field" />
                 		</td>
@@ -181,19 +181,20 @@
                             <td>结束时间:</td>
                             <td>{{slot.end_date}}</td>
                         </tr>
+                        <!-- 无时间限制情况 -->
                         <tr v-if="allTime < 0">
                             <td colspan="5">
                                 <div class="am-progress am-progress-striped">
-                                    <div class="am-progress-bar am-progress-bar-secondary" style="width: 100%">
+                                    <div class="am-progress-bar am-progress-bar-secondary" v-bind:class="{ noTileStyle : allTime < 0 }" style="width: 100%">
                                         无时间限制 消耗:{{ slot.slot_time }}分钟
                                     </div>
                                 </div>
-
                             </td>
                         </tr>
-                        <tr v-if="allTime > 0">
+
+                        <tr v-if="slot.slot_time > 0 && allTime > 0">
                             <td colspan="5">
-                                <div class="am-progress am-progress-striped">
+                                <div class="am-progress am-progress-striped" v-if="slot.slot_time > 1">
                                     <div class="am-progress-bar" v-bind:class="{ 'am-progress-bar-danger': slot.slot_time/(allTime/100) > 100 }" v-bind:style="{width: (slot.slot_time/(allTime/100) > 100 ? 100 : slot.slot_time/(allTime/100)) +'%'}" >
                                         耗时:{{slot.slot_time}}&nbsp;共:{{allTime}} 分钟
                                         <span v-if="slot.slot_time/(allTime/100) > 100" class="am-badge am-badge-danger">
@@ -203,7 +204,12 @@
                                 </div>
                             </td>
                         </tr>
-
+                        <!-- 消耗时间小于一分钟时 -->
+                        <tr v-if="slot.slot_time < 1">
+                            <td colspan="5">
+                                <span class="am-badge am-badge-warning">消耗时间小于1分钟</span>
+                            </td>
+                        </tr>
                     </table>
                     <!-- 时间段 END -->
                 </div>
@@ -249,13 +255,15 @@
     //编辑任务
     function plan_edit_ready(window){
         var plan_id = window.getAttribute('f_planid');
-        console.log(plan_id);
+        var vue = window.__vue__;
+        vue.$data.win_title = "编辑任务";
 
     }
     //查看任务
     function see_plan(windowa){
         var plan_id = windowa.getAttribute('f_planid');
         var vue = windowa.__vue__;
+        vue.$data.win_title = "查看任务";
         getRequest('json_api/planTimeSlot',{planid:plan_id},(data)=>{
             /*
                  win_title: '查看任务',

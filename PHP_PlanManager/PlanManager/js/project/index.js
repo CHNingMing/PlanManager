@@ -40,19 +40,20 @@ function getRequest(url, params,fun_succ,fun_err) {
  */
 function openWin(winid,even_dom,fun){
 	var window_all = document.getElementById(winid);
-	//最大包裹层
-	window_all.classList.remove('close');
-	window_all.classList.add('open');
+    //最大包裹层
+    window_all.classList.remove('close');
+    window_all.classList.add('open');
 	//窗口层
 	var window_win = window_all.querySelector('.window');
-    window_win.classList.remove('close_d');
-    window_win.classList.add('close_s');
-    //模糊层
-    var window_vague = window_all.querySelector('.win_vague');
-    window_vague.style.display = 'none';
-/*	if( even_dom != undefined && even_dom != null ){
-		window.even_dom = even_dom;
-	}*/
+	if( window_win != null ){
+        window_win.classList.remove('close_d');
+        window_win.classList.add('close_s');
+    }else{
+        window_all.classList.remove('close_d');
+        window_all.classList.add('close_s');
+    }
+
+    /* 传递属性 */
 	if( even_dom != undefined && even_dom != null ){
 		for( var attri of even_dom.attributes ){
 			var attr_str = attri.name;
@@ -75,20 +76,19 @@ function openWin(winid,even_dom,fun){
 }
 function closeWin(winid){
 	var window = document.getElementById(winid);
-	/*window.classList.remove('open');
-    window.classList.add('close');*/
-    //窗口
-	/*
-		window:普通窗口
-	*/
-	var window_win = window.querySelector('.window');
-	if( window_win == null ){
-        window.classList.remove('close_s')
-        window.classList.add('close_d');
-	}else{
+    //最大包裹层
+    window.classList.remove('close');
+    window.classList.add('open');
+
+    var window_win = window.querySelector('.window');
+    if( window_win != null ){
         window_win.classList.remove('close_s');
         window_win.classList.add('close_d');
-	}
+    }else{
+        window.classList.remove('close_s');
+        window.classList.add('close_d');
+    }
+
     //模糊层
 	var window_vague = window.querySelector('.win_vague');
 	window_vague.style.display = 'none';
@@ -196,8 +196,8 @@ function del_plan(){
     var plan_id = windows.attributes.f_planid.value;
     getRequest('json_api/del_plan',{planId:plan_id},function(data){
         if( data.body.status == 0 ){
-            closeWin('message_win_del');
             searchPlanList();
+            closeWin('message_win_del');
         }
     });
 }

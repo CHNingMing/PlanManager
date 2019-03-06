@@ -55,6 +55,7 @@
                 echo $_GET['fun_name'].'('.$result.');';
             }else{
                 echo 'doResponse('.$result.');';
+                echo '<script>window.name = "{$result}"</script>';
             }
         }
     }
@@ -128,8 +129,8 @@
      * @param unknown $planName
      * @param unknown $budgetDate
      */
-    function createPlan( $planName,$budgetDate,$planInfo ){
-        $result = createPlan_service($planName,$budgetDate,$planInfo);
+    function createPlan( $planName,$budgetDate,$planInfo,$closing_date ){
+        $result = createPlan_service($planName,$budgetDate,$planInfo,$closing_date);
         $resp = new ResponePojo();
         if( $result ){
             return returnValue($resp);
@@ -185,12 +186,23 @@
         $resp->put("msg","查询失败！");
         return returnValue($resp);
     }
-
-    function updatePlan( $plan_id,$planName,$budgetDate,$planInfo ){
+    /**
+     * 修改任务信息
+     */
+    function updatePlan( $plan_id,$planName,$budgetDate,$planInfo,$closing_date ){
         $resp = new ResponePojo();
         $plan = new Plan();
-
-        
+        $plan->plan_id = $plan_id;
+        $plan->plan_name = $planName;
+        $plan->budgetDate = $budgetDate;
+        $plan->plan_info = $planInfo;
+        $plan->closing_date = $closing_date;
+        if( updatePlan_service($plan) ){
+            $resp->put("status",0);
+        }else{
+            $resp->put("status",1);
+            $resp->put("msg","修改失败！");
+        }
         return returnValue($resp);
     }
 

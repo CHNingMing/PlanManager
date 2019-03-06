@@ -11,7 +11,16 @@
         $paramType = $_POST['planType'];
         $paramState = $_POST['planState'];
     }
-    /*phpinfo();*/
+
+
+
+
+
+    /*
+        测试数据
+        phpinfo();
+
+    */
 ?>
 
 <!--
@@ -33,7 +42,7 @@
 		<script type="text/javascript" src="js/vue-resource.js"></script>
 
         <!-- 跨域请求 -->
-        <!-- <script type="text/javascript" src="js/project/js_request.js"></script> -->
+        <script type="text/javascript" src="js/project/js_request.js"></script>
 	</head>
 	<body>
 	<div class="am-panel am-panel-default">
@@ -144,7 +153,13 @@
                 		<td>
                 			<input name="budgetDate" class="am-form-field" />
                 		</td>
-                	</tr>
+                    </tr>
+                    <tr>
+                        <td>截止日期</td>
+                        <td>
+                            <input type="date" nam="eclosing_date" />
+                        </td>
+                    </tr>
                     <tr>
                         <td colspan="4">任务详情：</td>
                     </tr>
@@ -209,7 +224,6 @@
                             <!-- 正常情况 -->
                             <tr v-if="slot.slot_time > 0 && allTime > 0">
                                 <td colspan="5">
-
                                     <div class="am-progress-striped" v-if="slot.slot_time > 1">
                                         <div class="am-progress-bar" v-bind:class="{ 'am-progress-bar-danger': slot.slot_time/(allTime/100) > 100 }" v-bind:style="{width: (slot.slot_time/(allTime/100) > 100 ? 100 : slot.slot_time/(allTime/100)) +'%'}" >
                                             耗时:{{slot.slot_time}}&nbsp;共:{{allTime}} 分钟
@@ -238,7 +252,7 @@
                     <div class="am-panel-hd">详细信息</div>
                     <div class="am-panel-bd">
                         <form id="planInfo">
-                            <input type="hidden" v-bind:value="plan_obj.plan_id" />
+                            <input type="hidden" name="plan_id" v-bind:value="plan_obj.plan_id" />
                             <table width="100%">
                                 <tr>
                                     <td>任务名称：</td>
@@ -253,6 +267,13 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>截止日期</td>
+                                <td>
+                                    <input type="date" name="closing_date" />
+                                    <span class="am-badge am-badge-secondary am-round">{{plan_obj.closing_date}}</span>
+                                </td>
+                                </tr>
+                                <tr>
                                     <td colspan="2">任务详情：</td>
                                 </tr>
                                 <tr>
@@ -262,7 +283,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="2">
-                                        <button class="am-btn am-btn-success" style="margin:0 auto;">保存</button>
+                                        <button class="am-btn am-btn-success" style="margin:0 auto;" onclick="edit_save()" >保存</button>
                                     </td>
                                 </tr>
                             </table>
@@ -283,7 +304,7 @@
 
 	window.onload = function(){
 	    //测试
-        // getReqeust('getPlanByPlanId?planid=1',{},function(data){
+        // getSpanReqeust('getPlanByPlanId?planid=1',{},function(data){
         //     console.log('接受成功！');
         //     console.log(data);
         // });
@@ -361,9 +382,17 @@
                 });
             }
         });
+    }
 
+    //保存编辑内容
+    function edit_save(){
+        var param =  getFormParam('planInfo');
+        getRequest('json_api/updatePlan',param,function(data){
+            console.log(data.body);
+        });
 
     }
+
     /* 编辑/查看任务 END */
 
 </script>

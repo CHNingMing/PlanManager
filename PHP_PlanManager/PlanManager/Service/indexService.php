@@ -33,7 +33,7 @@
     
     //获取任务列表
     function getPlanItemHtml_service(){
-        $result = getPlanItem_service();
+        $result = getPlanItem_service( null,null,null );
         if( !$result ){
             echo "<tr><td colspan='4' class='notdate'>没有相关数据!</td></tr>";
             return;
@@ -68,19 +68,21 @@
         }
     }
 
-    
+    /**
+     * 更新任务
+     */
     function updatePlan_service( $plan ){
         global $conn;
-        
-        $result = mysqli_query($conn,"update date_item set plan_name = '{$plan->plan_name}' and budgetDate = {$plan->budgetDate} and plan_info = {$plan->plan_info} where plan_id = {$plan->plan_id} ");
-
+        $updateSql = "update plan_item set plan_name = '{$plan->plan_name}' , budgetDate = {$plan->budgetDate} , plan_info = '{$plan->plan_info}',closing_date = '{$plan->closing_date}' where plan_id = {$plan->plan_id} ";
+        $result = mysqli_query($conn,$updateSql);
+        return $result;
     }
 
     //今天奋斗时间
     function currDayTime_service(){
         global  $conn;
         
-        $result = mysqli_query($conn, "SELECT left(sum(timediff(end_date,begin_date)),5) currDayTime FROM date_item where date_format(begin_date,'%y-%m-%d') = date_format(now(),'%y-%m-%d');");
+        $result = mysqli_query($conn, "SELECT sum(TIMESTAMPDIFF(minute,begin_date,end_date)) currDayTime FROM date_item where date_format(begin_date,'%y-%m-%d') = date_format(now(),'%y-%m-%d');");
         if( mysqli_num_rows($result) > 0 ){
             $rows =  mysqli_fetch_assoc($result);
             echo $rows['currDayTime'];
@@ -94,9 +96,9 @@
      * @param unknown $planName
      * @param unknown $budgetDate
      */
-    function createPlan_service( $planName,$budgetDate,$planInfo ){
+    function createPlan_service( $planName,$budgetDate,$planInfo,$closing_date ){
         global $conn;
-        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag,create_date,plan_Info) values('{$planName}','{$budgetDate}',0,0,now(),'{$planInfo}')";
+        $crePlanSql = "insert into plan_item(plan_name,budgetDate,plan_state,del_flag,create_date,plan_Info,closing_date) values('{$planName}','{$budgetDate}',0,0,now(),'{$planInfo}','{$closing_date}')";
         return mysqli_query($conn, $crePlanSql);
     }
 
@@ -149,7 +151,7 @@
      */
     function getPlanById_server( $planId ){
         global $conn;
-        $selPlanSql = "select plan_id,plan_name,budgetDate,plan_state,del_flag,create_date,plan_info from plan_item where plan_id = {$planId}";
+        $selPlanSql = "select plan_id,plan_name,budgetDate,plan_state,del_flag,create_date,plan_info,left(closing_date,10) as closing_date from plan_item where plan_id = {$planId}";
         return mysqli_query($conn,$selPlanSql);
     }
     

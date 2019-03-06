@@ -74,6 +74,7 @@ function openWin(winid,even_dom,fun){
 		fun(window_all,even_dom);
 	}
 }
+//关闭窗口
 function closeWin(winid){
 	var window = document.getElementById(winid);
     //最大包裹层

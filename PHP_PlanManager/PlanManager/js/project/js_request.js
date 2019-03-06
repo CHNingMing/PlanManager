@@ -8,11 +8,17 @@ var resultData = undefined;
 function doResponse(data){
     resultData = data;
 }
-function getReqeust( url , param , fun ){
+/**
+ * 跨域请求
+ * @param {*} url 
+ * @param {*} param 
+ * @param {*} fun 
+ */
+function getSpanReqeust( url , param , fun ){
     var script = document.createElement('script');
     script.id = 't_spanDomain_script';
     script.type = 'text/javascript';
-    script.src = 'http://gengmingyan.llli.online/jsonp_api/'+url;
+    script.src = 'http://gengmingyan.cccyun.cf/jsonp_api/'+url;
     //处理参数
     script.src += paramSerialize(param);
     /*if( fun_name != undefined ){

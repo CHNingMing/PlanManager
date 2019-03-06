@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>跨域iframe</title>
+    </head>
+    <script>
+        function resp(){
+            document.domain = 'gengmingyan.cccyun.cf';
+            var iframe = document.getElementById('iframe');
+            console.log(iframe.contentWindow);
+
+
+        }
+    </script>
+    <body>
+        <iframe src="http://gengmingyan.cccyun.cf/jsonp_api/getPlanList" id="iframe" onload="resp()"></iframe>
+
+    </body>
+</html>

@@ -13,7 +13,7 @@
         plan_state,
         budgetDate
          FROM
-                ym970u.plan_item
+                plan_item
         where del_flag = 0
         ";
         if( $planType != null || $planState != null || $planName != null ){
@@ -67,6 +67,15 @@
             }
         }
     }
+
+    
+    function updatePlan_service( $plan ){
+        global $conn;
+        
+        $result = mysqli_query($conn,"update date_item set plan_name = '{$plan->plan_name}' and budgetDate = {$plan->budgetDate} and plan_info = {$plan->plan_info} where plan_id = {$plan->plan_id} ");
+
+    }
+
     //今天奋斗时间
     function currDayTime_service(){
         global  $conn;
@@ -106,7 +115,7 @@
             $insertPlanTime = "insert into date_item(plan_id,begin_date) values({$planId},now())";
         }else{
             //结束任务
-            $insertPlanTime = "update date_item set end_date = now() where plan_id = {$planId}";
+            $insertPlanTime = "update date_item set end_date = now() where plan_id = {$planId} and end_date is null";
         }
         //设置状态
         mysqli_query($conn,$updatePlanState);

@@ -1,12 +1,6 @@
 <?php
     /* JSON接口 */
-    //任务对象
-    class Plan{
-        public $plan_name ;
-        public  $budgetDate = 0;
-        public  $plan_id = 0;
-        public  $plan_state;
-    }
+
     //响应对象
     class ResponePojo{
         public $status = 0;
@@ -17,9 +11,10 @@
             $this->$key = $value;
         }
     }
-    header('Content-Type:text/xml; charset=utf-8');
+    header('Content-Type:text/html; charset=utf-8');
     require 'data/indexData.php';
     require 'Service/indexService.php';
+    require 'entity/Plan.php';
     connDatabase_data();
     
     onRequest();
@@ -29,6 +24,8 @@
     function onRequest(){
         header('Content-Type:text/json; charset=utf-8');
         $funName = $_SERVER['REQUEST_URI'];
+
+
         //去掉请求连接，只剩下最后一个url路径，来当执行方法
         $funName_2 = strrchr($funName,"/");
         $p_index = strpos($funName_2, "?");
@@ -45,15 +42,27 @@
         if( !function_exists($funName_3) ){
             //响应对象
             $data = array("state"=>1,"msg"=>"函数不存在");
-            exit(json_encode($data)); 
+            exit(json_encode($data));
             return;
         }
         //执行指定方法
         //获取方法参数实例名，调整参数顺序
         $param_arr =  getFucntionParameterName($funName_3);
-        call_user_func_array($funName_3,$param_arr);
+        $result = call_user_func_array($funName_3,$param_arr);
+        if( is_span_domain() ){
+            header('Content-Type:application/x-javascript;charset=utf-8');
+            if( isset($_GET['fun_name']) ){
+                echo $_GET['fun_name'].'('.$result.');';
+            }else{
+                echo 'doResponse('.$result.');';
+            }
+        }
     }
-    
+
+
+
+
+
     /**
      * 获取任务列表
      * @param unknown $param
@@ -68,14 +77,13 @@
         if( $planType != null || $planState != null ){
             $result =  getPlanItem_service($planType,$planState,$planName);
         }else{
-            $result =  getPlanItem_service();
+            $result =  getPlanItem_service( null,null,null );
         }
         
         $planList = array();
         if( !$result ){
             $resp->put("status",1);
-            echo json_encode($resp);
-            return;
+            return returnValue($resp);
         }
         while( $row = mysqli_fetch_assoc($result) ){
             $plan = new Plan();
@@ -86,7 +94,7 @@
             array_push($planList,$plan);
         }
         $resp->put("planList", $planList);
-        echo $resp->getJson();
+        return returnValue($resp);
     }
     
     /**
@@ -98,7 +106,7 @@
     function updateState_api( $plan_id,$plan_state){
         updateState($plan_id,$plan_state);
         $resp_pojo = new ResponePojo();
-        echo $resp_pojo->getJson();
+        return returnValue($resp_pojo);
     }
     
     
@@ -124,11 +132,10 @@
         $result = createPlan_service($planName,$budgetDate,$planInfo);
         $resp = new ResponePojo();
         if( $result ){
-            echo $resp->getJson();
-            return;
+            return returnValue($resp);
         }
         $resp->put("status", 1);
-        echo $resp;
+        return returnValue($resp);
     }
     /**
      * 设置删除标记
@@ -138,10 +145,9 @@
         $resp = new ResponePojo();
         if ( del_Plan_service( $planId ) ){
             $resp->put("msg", "删除{$planId}成功！");
-            echo $resp->getJson();
-            return;
+            return returnValue($resp);
         }
-        echo $resp->getJson();
+        return returnValue($resp);
     }
 
     /***
@@ -158,30 +164,67 @@
         if( !$result ){
             $resp->put("status",1);
             $resp->put("msg","查询失败！");
-            echo $resp->getJson();
-            return;
+            return returnValue($resp);
         }
         $resp->put("time_slot",$planItem);
-        echo $resp->getJson();
+        return returnValue($resp);
     }
 
     /**
      * 查询指定任务
      * @param $planId
      */
-    function getPlanByPlanId( $planId ){
+    function getPlanByPlanId( $planid ){
         $resp = new ResponePojo();
-        $result = getPlanById_server($planId);
-        if( $result != null ){
-
+        $result = getPlanById_server($planid);
+        if( $result != null || $result != false ){
             $resp->put("plan",$result->fetch_object());
-            echo $resp->getJson();
-            return;
+            return returnValue($resp);
         }
         $resp->put("status",1);
         $resp->put("msg","查询失败！");
-        echo $resp->getJson();
-        return;
+        return returnValue($resp);
+    }
+
+    function updatePlan( $plan_id,$planName,$budgetDate,$planInfo ){
+        $resp = new ResponePojo();
+        $plan = new Plan();
+
+        
+        return returnValue($resp);
+    }
+
+
+
+
+
+
+
+    /*                                          ---强行分割---                                 */
+    /**
+     * 通用返回响应对象调用方法
+     * @param $resp
+     * @return mixed
+     */
+    function returnValue( $resp ){
+        if( !is_span_domain() ){
+            echo $resp->getJson();
+        }
+        return $resp->getJson();
+    }
+
+    /**
+     * 判断当前请求是否是跨域请求
+     */
+    function is_span_domain(){
+        $req_url = explode('/',$_SERVER['REQUEST_URI']);
+        foreach( $req_url as $_url ){
+            if( $_url == 'jsonp_api' ){
+                //跨域请求
+                return true;
+            }
+        }
+        return false;
     }
 
 ?>

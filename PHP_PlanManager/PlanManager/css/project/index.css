@@ -81,11 +81,17 @@
 
 }
 
+/*编辑状态下进度条包裹样式*/
+.editProgressStyle{
+	max-height:150px;
+	overflow-x:hidden;
+	overflow-y:auto;
+}
+
 /*进度条无时间限制样式*/
 .noTileStyle{
 	background-color: #000c13;
 }
-
 
 /* 创建任务窗口 END */
 .close{
@@ -96,7 +102,7 @@
 }
 
 .close_d{
-	top:-400px;
+	top:-900px;
 	opacity: 0;
 }
 .close_s{

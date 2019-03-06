@@ -11,7 +11,7 @@
         $paramType = $_POST['planType'];
         $paramState = $_POST['planState'];
     }
-    
+    /*phpinfo();*/
 ?>
 
 <!--
@@ -31,6 +31,9 @@
 		<link rel="stylesheet" type="text/css" href="css/project/index.css" />
 		<script type="text/javascript" src="js/project/index.js"></script>
 		<script type="text/javascript" src="js/vue-resource.js"></script>
+
+        <!-- 跨域请求 -->
+        <!-- <script type="text/javascript" src="js/project/js_request.js"></script> -->
 	</head>
 	<body>
 	<div class="am-panel am-panel-default">
@@ -171,48 +174,103 @@
                 <a href="#" class="closeBtn" onclick="closeWin('editplan_win')" >X</a>
             </div>
             <div class="context">
-                <div id="planDateList">
+                <div id="planDateList" v-bind:class="{ editProgressStyle : is_edit }">
                     <!-- 时间段 -->
-                    <table v-for="slot in timeSlot":key='slot.key'>
-                        <tr>
-                            <td>开始时间:</td>
-                            <td>{{slot.begin_date}}</td>
-                            <td> &nbsp; | &nbsp; </td>
-                            <td>结束时间:</td>
-                            <td>{{slot.end_date}}</td>
-                        </tr>
-                        <!-- 无时间限制情况 -->
-                        <tr v-if="allTime < 0">
-                            <td colspan="5">
-                                <div class="am-progress am-progress-striped">
-                                    <div class="am-progress-bar am-progress-bar-secondary" v-bind:class="{ noTileStyle : allTime < 0 }" style="width: 100%">
-                                        无时间限制 消耗:{{ slot.slot_time }}分钟
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                    <table>
+                        <tbody class="am-panel am-panel-default" v-for="slot in timeSlot":key='slot.key'>
+                            <tr>
+                                <td colspan="5">
 
-                        <tr v-if="slot.slot_time > 0 && allTime > 0">
-                            <td colspan="5">
-                                <div class="am-progress am-progress-striped" v-if="slot.slot_time > 1">
-                                    <div class="am-progress-bar" v-bind:class="{ 'am-progress-bar-danger': slot.slot_time/(allTime/100) > 100 }" v-bind:style="{width: (slot.slot_time/(allTime/100) > 100 ? 100 : slot.slot_time/(allTime/100)) +'%'}" >
-                                        耗时:{{slot.slot_time}}&nbsp;共:{{allTime}} 分钟
-                                        <span v-if="slot.slot_time/(allTime/100) > 100" class="am-badge am-badge-danger">
-                                            严重超时:{{ slot.slot_time - allTime }}分钟
+                                    <div class="am-panel-hd">
+                                        <span class="am-badge">开始时间:</span>
+                                        <span class="am-badge am-badge-success">
+                                            {{slot.begin_date}}
+                                        </span>
+                                        <span class="am-badge">结束时间:</span>
+                                        <span class="am-badge am-badge-success">
+                                            {{slot.end_date}}
                                         </span>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- 消耗时间小于一分钟时 -->
-                        <tr v-if="slot.slot_time < 1">
+
+                                </td>
+                            </tr>
+                            <!-- 无时间限制情况 -->
+                            <tr v-if="allTime < 0">
+                                <td colspan="5">
+
+                                    <div class="am-progress am-progress-striped">
+                                        <div class="am-progress-bar am-progress-bar-secondary" v-bind:class="{ noTileStyle : allTime < 0 }" style="width: 100%">
+                                            无时间限制 消耗:{{ slot.slot_time }}分钟
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <!-- 正常情况 -->
+                            <tr v-if="slot.slot_time > 0 && allTime > 0">
+                                <td colspan="5">
+
+                                    <div class="am-progress-striped" v-if="slot.slot_time > 1">
+                                        <div class="am-progress-bar" v-bind:class="{ 'am-progress-bar-danger': slot.slot_time/(allTime/100) > 100 }" v-bind:style="{width: (slot.slot_time/(allTime/100) > 100 ? 100 : slot.slot_time/(allTime/100)) +'%'}" >
+                                            耗时:{{slot.slot_time}}&nbsp;共:{{allTime}} 分钟
+                                            <span v-if="slot.slot_time/(allTime/100) > 100" class="am-badge am-badge-danger">
+                                                严重超时:{{ slot.slot_time - allTime }}分钟
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <!-- 消耗时间小于一分钟时 -->
+                            <tr v-if="slot.slot_time < 1">
                             <td colspan="5">
                                 <span class="am-badge am-badge-warning">消耗时间小于1分钟</span>
                             </td>
                         </tr>
+                        </tbody>
                     </table>
                     <!-- 时间段 END -->
+
                 </div>
+                <!-- 任务详情 -->
+                <!-- 编辑视图 -->
+                <div v-if="is_edit" class="am-panel am-panel-default">
+                    <div class="am-panel-hd">详细信息</div>
+                    <div class="am-panel-bd">
+                        <form id="planInfo">
+                            <input type="hidden" v-bind:value="plan_obj.plan_id" />
+                            <table width="100%">
+                                <tr>
+                                    <td>任务名称：</td>
+                                    <td>
+                                        <input name="planName" v-bind:value="plan_obj.plan_name" class="am-form-field" textarea="请输入任务名称..." />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>预计时间:</td>
+                                    <td >
+                                        <input name="budgetDate" v-bind:value="plan_obj.budgetDate" class="am-form-field" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">任务详情：</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <textarea  v-bind:value="plan_obj.plan_info" style="width:100%;min-height:200px" name="planInfo"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <button class="am-btn am-btn-success" style="margin:0 auto;">保存</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 任务详情 END -->
             </div>
         </div>
     </div>
@@ -224,6 +282,16 @@
 <script>
 
 	window.onload = function(){
+	    //测试
+        // getReqeust('getPlanByPlanId?planid=1',{},function(data){
+        //     console.log('接受成功！');
+        //     console.log(data);
+        // });
+
+        //
+
+
+
 		//当前奋斗时间
 		new Vue({
 			el: '#app',
@@ -242,8 +310,10 @@
             el: '#editplan_win',
             data:{
                 timeSlot:new Array(),   //时间段
-                win_title: '查看任务',  //窗口标题
-                allTime: 0     //预计时间
+                win_title: '查看任务',    //窗口标题
+                allTime: 0,             //预计时间
+                is_edit: false,         //查看/编辑 标识 编辑:true
+                plan_obj:new Object()   //任务对象
             }
         });
 
@@ -257,6 +327,24 @@
         var plan_id = window.getAttribute('f_planid');
         var vue = window.__vue__;
         vue.$data.win_title = "编辑任务";
+        vue.$data.is_edit = true;
+        //获取任务对象
+        getRequest('json_api/getPlanByPlanId',{planid:plan_id},(data)=>{
+            if( data.body.status == 0  ){
+                vue.$data.plan_obj = data.body.plan;
+            }
+        });
+
+        //获取时间段
+        getRequest('json_api/planTimeSlot',{planid:plan_id},(data)=>{
+            if( data.body.status == 0 ){
+                vue.$data.timeSlot = data.body.time_slot;
+                getRequest('json_api/getPlanByPlanId',{planid:plan_id},(planObj)=>{
+                    vue.$data.allTime = (planObj.body.status == 0 ? planObj.body.plan.budgetDate : 0);
+                });
+            }
+        });
+
 
     }
     //查看任务
@@ -264,24 +352,13 @@
         var plan_id = windowa.getAttribute('f_planid');
         var vue = windowa.__vue__;
         vue.$data.win_title = "查看任务";
+        vue.$data.is_edit = false;
         getRequest('json_api/planTimeSlot',{planid:plan_id},(data)=>{
-            /*
-                 win_title: '查看任务',
-                begin_date: 'xxx-xx-xx xx:xx:xx',
-                end_date: 'xxx-xx-xx xx:xx:xx',
-                timeSlot: 30,
-                allTime: 100
-             */
             if( data.body.status == 0 ){
                 vue.$data.timeSlot = data.body.time_slot;
-                getRequest('json_api/getPlanByPlanId',{planId:plan_id},(planObj)=>{
+                getRequest('json_api/getPlanByPlanId',{planid:plan_id},(planObj)=>{
                     vue.$data.allTime = (planObj.body.status == 0 ? planObj.body.plan.budgetDate : 0);
-
-
-
                 });
-
-
             }
         });
 

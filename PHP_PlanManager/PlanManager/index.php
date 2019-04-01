@@ -21,6 +21,7 @@
         phpinfo();
 
     */
+    echo exec ('./main1');
 ?>
 
 <!--
@@ -222,7 +223,7 @@
                                 </td>
                             </tr>
                             <!-- 正常情况 -->
-                            <tr v-if="slot.slot_time > 0 && allTime > 0">
+                            <tr v-if="slot.slot_time/(allTime/100) > 10 && allTime > 0">
                                 <td colspan="5">
                                     <div class="am-progress-striped" v-if="slot.slot_time > 1">
                                         <div class="am-progress-bar" v-bind:class="{ 'am-progress-bar-danger': slot.slot_time/(allTime/100) > 100 }" v-bind:style="{width: (slot.slot_time/(allTime/100) > 100 ? 100 : slot.slot_time/(allTime/100)) +'%'}" >
@@ -235,12 +236,17 @@
 
                                 </td>
                             </tr>
-                            <!-- 消耗时间小于一分钟时 -->
-                            <tr v-if="slot.slot_time < 1">
-                            <td colspan="5">
-                                <span class="am-badge am-badge-warning">消耗时间小于1分钟</span>
-                            </td>
-                        </tr>
+                            <!-- 任务百分比小于%5时 -->
+                            <tr v-if="slot.slot_time/(allTime/100) < 10">
+                                <td colspan="5">
+                                    <span class="am-badge am-badge-warning">
+                                        <span v-if="allTime > 0">
+                                            消耗时间小于整体%10,
+                                        </span>
+                                        耗时{{slot.slot_time}}分钟
+                                    </span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <!-- 时间段 END -->

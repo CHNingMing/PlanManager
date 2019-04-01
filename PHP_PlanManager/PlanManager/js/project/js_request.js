@@ -48,6 +48,10 @@ function getSpanReqeust( url , param , fun ){
     },1000);
 }
 
+function getSpanReqeust( url , param , fun ){
+    
+}
+
 //处理参数方法
 function paramSerialize(param){
     if( param == undefined || param == null ){

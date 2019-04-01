@@ -150,21 +150,38 @@ function searchPlanList(){
         }
         for( var data of table_data.planList ){
             var span_str = "<span planid='"+data.plan_id+"' ";
-            var successPlan_a = "<a title='点击完成任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",4)'  href='#'>完成</a>";
+            var successPlan_a = " &nbsp;|&nbsp; <a title='点击完成任务' class='am-btn am-btn-success' onclick='updatePlanState("+data.plan_id+",4)'  href='#'>完成</a>";
             switch( data.plan_state ){
                 case "0":
                     span_str+="title='点击开始任务' class='am-badge am-radius'> <a class='plan_state' onclick='updatePlanState("+data.plan_id+",1)' href='#'>未开始</a>";
                     break;
                 case "1":
-                    span_str+=">进行中<a title='点击暂停任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",2)'  href='#'>暂停</a>"+successPlan_a;
+                    span_str+=">进行中 &nbsp;|&nbsp; <a title='点击暂停任务' class='am-btn am-btn-secondary' onclick='updatePlanState("+data.plan_id+",2)'  href='#'>暂停</a>"+successPlan_a;
                     break;
 				case "2":
-					span_str+=">已暂停<a title='点击继续任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",1)'>继续</a>"+successPlan_a
+					span_str+=">已暂停 &nbsp;|&nbsp; <a title='点击继续任务' class='am-btn am-btn-warning' onclick='updatePlanState("+data.plan_id+",1)'>继续</a>"+successPlan_a
 					break;
                 case "4":
                     span_str+="><a class='am-badge am-badge-success am-radius'>成功</a>";
                     break;
             }
+
+            // switch( data.plan_state ){
+            //     case "0":
+            //         span_str+="title='点击开始任务' class='am-badge am-radius'> <a class='plan_state' onclick='updatePlanState("+data.plan_id+",1)' href='#'>未开始</a>";
+            //         break;
+            //     case "1":
+            //         span_str+=">进行中<a title='点击暂停任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",2)'  href='#'>暂停</a>"+successPlan_a;
+            //         break;
+			// 	case "2":
+			// 		span_str+=">已暂停<a title='点击继续任务' class='plan_state am-badge am-badge-secondary am-radius' onclick='updatePlanState("+data.plan_id+",1)'>继续</a>"+successPlan_a
+			// 		break;
+            //     case "4":
+            //         span_str+="><a class='am-badge am-badge-success am-radius'>成功</a>";
+            //         break;
+            // }
+
+
             span_str+="</span>";
             data.plan_status = data.plan_state;
             data.plan_state = span_str;

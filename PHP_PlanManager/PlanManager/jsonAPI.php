@@ -23,6 +23,9 @@
      */
     function onRequest(){
         header('Content-Type:text/json; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");   //跨域
+
+
         $funName = $_SERVER['REQUEST_URI'];
 
 
@@ -50,6 +53,8 @@
         $param_arr =  getFucntionParameterName($funName_3);
         $result = call_user_func_array($funName_3,$param_arr);
         if( is_span_domain() ){
+            /*
+            //jsonp跨域
             header('Content-Type:application/x-javascript;charset=utf-8');
             if( isset($_GET['fun_name']) ){
                 echo $_GET['fun_name'].'('.$result.');';
@@ -57,6 +62,11 @@
                 echo 'doResponse('.$result.');';
                 echo '<script>window.name = "{$result}"</script>';
             }
+            */
+            //正规跨域
+            echo $result;
+
+
         }
     }
 

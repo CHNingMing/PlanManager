@@ -6,43 +6,61 @@
     android:layout_height="match_parent"
     tools:context="com.example.root.planmanager.item_layout">
     <!-- 数据项 -->
-
-
-    <TextView
-        android:id="@+id/t_plan_state"
-        android:layout_width="222dp"
-        android:layout_height="22dp"
-        android:layout_marginLeft="55dp"
-        android:text="TextView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/img_head"
-
-        />
-
-    <Button
-        android:id="@+id/btn_ok"
-        android:layout_width="wrap_content"
+    <!--
+        android:descendantFocusability="blocksDescendants"  防止onItemClick不生效
+    -->
+    <com.example.root.planmanager.item_layout_itemsOpt
+        android:id="@+id/list_itemopt"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintLeft_toRightOf="@id/t_plan_state"
-        app:layout_constraintTop_toTopOf="@id/t_plan_state"
-        />
+        android:descendantFocusability="blocksDescendants"
+        app:plan_id="19"
+        >
+        <TextView
+            android:id="@+id/t_plan_state"
+            android:layout_width="222dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="55dp"
+            android:text="TextView"
+            app:layout_constraintLeft_toLeftOf="@id/list_itemopt"
+            app:layout_constraintTop_toTopOf="@id/img_head"
 
-    <ImageView
-        android:id="@+id/img_head"
-        android:layout_width="100px"
-        android:layout_height="100px"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_margin="50px"
-        />
+            />
+        <com.example.root.planmanager.ItemImageItemsOpt
+            android:id="@+id/img_delplan"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:text="Button"
+            app:layout_constraintLeft_toRightOf="@id/t_plan_state"
+            app:layout_constraintTop_toTopOf="@id/t_plan_state"
+            />
+        <com.example.root.planmanager.ItemImageItemsOpt
+            android:id="@+id/img_head"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_margin="50px"
+            />
+<!--        <ImageView
+            android:id="@+id/img_head"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_margin="50px"
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="222dp"
-        android:layout_height="16dp"
-        app:layout_constraintLeft_toLeftOf="@id/t_plan_state"
-        app:layout_constraintTop_toBottomOf="@id/t_plan_state"
-        />
+            />-->
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="222dp"
+            android:layout_height="16dp"
+            app:layout_constraintLeft_toLeftOf="@id/t_plan_state"
+            app:layout_constraintTop_toBottomOf="@id/t_plan_state"
+            />
+    </com.example.root.planmanager.item_layout_itemsOpt>
+
+
 </android.support.constraint.ConstraintLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 自定义属性 -->
+    <!-- 指定控件属性 -->
+    <declare-styleable name="item_layout_itemsOpt">
+        <attr name="plan_id" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="ItemImageItemsOpt">
+        <attr name="srcCompat" />
+        <!-- 组件包裹组件，如果父级设置了plan_id ，子组件在设置有冲突问题 -->
+        <attr name="plan_id_image" format="integer" />
+        <attr name="plan_state_image" format="integer" />
+    </declare-styleable>
+
+</resources>

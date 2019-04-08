@@ -2,6 +2,8 @@ package com.datasources;
 
 import com.entity.PlanItem;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ public class PlanData {
      * @param plan_state
      * @return
      */
-    public static List<PlanItem> getPlanItemsByState(boolean del_flag,int... plan_state){
+    public static List<PlanItem> getPlanItemsByState(boolean del_flag, Date date,int... plan_state){
         String where = "";
         for( int i = 0; i < plan_state.length; i++ ){
             if( i == 0 ){
@@ -31,8 +33,22 @@ public class PlanData {
         }else{
             where = " where "+where;
         }
+        if( date != null ){
+            //处理日期
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String date_str =  sdf.format(date);
+            where += " and date_format(create_date,'%Y-%m-%d') = '"+date_str+"'";
+        }
+
+
         List<PlanItem> planItemList = MySqlDS.querySql("select * from ym970u.plan_item"+where, PlanItem.class);
         return planItemList;
     }
+    public static List<PlanItem> getPlanItemsByState(boolean del_flag, int... plan_state){
+        return getPlanItemsByState(del_flag,null,plan_state);
+    }
+
+
+
 
 }

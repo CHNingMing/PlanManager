@@ -1,12 +1,23 @@
 package com.entity;
 
-import java.sql.Timestamp;
+import com.mysqlutil.annotation.DBField;
+import com.mysqlutil.annotation.FieldType;
+import com.mysqlutil.annotation.GoalTable;
+import com.mysqlutil.annotation.PrimaryKey;
 
+import java.sql.Timestamp;
+@GoalTable(tablename = "plan_item")
 public class PlanItem {
+    @PrimaryKey
+    @DBField(field_type = FieldType.Int)
     private Integer plan_id;
+    @DBField(field_type = FieldType.Varchar,not_null = true)
     private String plan_name;
+    @DBField(field_type = FieldType.Varchar)
     private String plan_info;
+    @DBField(field_type = FieldType.DateTime)
     private Timestamp create_date;
+    @DBField(field_type = FieldType.Int)
     private Integer plan_state;
 
     public Integer getPlan_state() {

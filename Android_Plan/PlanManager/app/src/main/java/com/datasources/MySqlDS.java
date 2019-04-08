@@ -5,6 +5,7 @@ import android.util.Log;
 
 
 import com.entity.PlanItem;
+import com.mysqlutil.MySqlDataUtil;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -54,57 +55,6 @@ public class MySqlDS {
         }
     }*/
 
-
-    public static void init(AssetManager assetManager){
-        try {
-            final InputStream jdbcconfig = assetManager.open("jdbc.properties");
-            Thread thread =  new Thread(){
-                @Override
-                public void run() {
-                    MySqlDataUtil.init(jdbcconfig);
-                    connection = MySqlDataUtil.getConn();
-                    Log.i(TAG,"===================================!");
-                    Log.i(TAG,"连接成功!");
-                }
-            };
-            thread.start();
-            thread.join();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static <V> List<V> querySql(final String sql, final Class entityClass){
-        Thread t =  new Thread(){
-            @Override
-            public void run() {
-                List<V> list = MySqlDataUtil.querySql(entityClass,sql);
-                t_objs.put("querySql",list);
-            }
-        };
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        List<V> list =  (List<V>)t_objs.get("querySql");
-        return list;
-    }
-
-
-
-
-    /**
-     * 是否连接
-     * @return true: 连接,false: 关闭
-     */
-    public static boolean isConnClose(){
-        return connection != null;
-    }
-
     /**
      * 执行普通SQL
      * @return
@@ -127,13 +77,123 @@ public class MySqlDS {
         return planItemList;
     }*/
 
+    /**
+     * 初始化连接方法
+     * @param assetManager
+     */
+    public static void init(AssetManager assetManager){
+        try {
+            final InputStream jdbcconfig = assetManager.open("jdbc.properties");
+            Thread thread =  new Thread(){
+                @Override
+                public void run() {
+                    MySqlDataUtil.init(jdbcconfig);
+                    connection = MySqlDataUtil.getConn();
+                    Log.i(TAG,"===================================!");
+                    Log.i(TAG,"连接成功!");
+                }
+            };
+            thread.start();
+            thread.join();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 执行普通SQL
+     * @return
+     */
+    public static <V> List<V> querySql(final String sql, final Class entityClass){
+        Thread t =  new Thread(){
+            @Override
+            public void run() {
+                List<V> list = MySqlDataUtil.querySql(entityClass,sql);
+                t_objs.put("querySql",list);
+            }
+        };
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        List<V> list =  (List<V>)t_objs.get("querySql");
+        return list;
+    }
+
+    /**
+     * 删除数据
+     * @param newObj
+     * @return
+     */
+    public static boolean delete(final Object newObj){
+        Thread t = new Thread(){
+            @Override
+            public void run() {
+                t_objs.put("delObj",MySqlDataUtil.update(newObj));
+            }
+        };
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if( t_objs.get("delObj") != null ){
+            return true;
+        }
+        return false;
+
+    }
+
+    /***
+     * 更新数据
+     * 保证实体主键描述属性不为null,非空项不为null
+     * @param newObj 更新数据对象
+     * @return
+     */
+    public static <T> T update(final Object newObj){
+        Thread t = new Thread(){
+            @Override
+            public void run() {
+                t_objs.put("updateObj",MySqlDataUtil.update(newObj));
+            }
+        };
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Object t_obj = t_objs.get("updateObj");
+        if( t_obj != null ){
+            return (T)t_obj;
+        }else{
+            return null;
+        }
+    }
 
 
+
+
+
+
+    /**
+     * 是否连接
+     * @return true: 连接,false: 关闭
+     */
+    public static boolean isConnClose(){
+        return connection != null;
+    }
 
 
 
 
 }
+
+
 
 /**
  * 连接类

@@ -10,9 +10,9 @@
         <item
             android:id="@+id/m_plan_alreadyplan"
             android:title="已处理" />
-        <!--<item-->
-            <!--android:id="@+id/m_plan_waitPlan"-->
-            <!--android:title="代办事项" />-->
+        <item
+            android:id="@+id/m_plan_alreadydel"
+            android:title="已删除项" />
         <!--<item-->
             <!--android:id="@+id/nav_gallery"-->
             <!--android:icon="@drawable/ic_menu_gallery"-->

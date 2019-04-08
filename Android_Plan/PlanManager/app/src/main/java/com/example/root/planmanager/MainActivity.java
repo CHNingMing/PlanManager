@@ -1,11 +1,8 @@
 package com.example.root.planmanager;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.ListViewAutoScrollHelper;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,34 +12,74 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.datasources.MySqlDS;
-import com.datasources.MySqlDataUtil;
 import com.datasources.PlanData;
 import com.entity.PlanItem;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import static com.datasources.MySqlDS.querySql;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //连接数据库
         MySqlDS.init(getAssets());
-        List<PlanItem> planItemList = PlanData.getPlanItemsByState(false,0,1,2);
-
+        List<PlanItem> planItemList = PlanData.getPlanItemsByState(true,0,1,2);
         //初始化界面
         setContentView(R.layout.activity_main);
+        //设置事件
+        setEvent();
+
+
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
+
+
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ListView listView = findViewById(R.id.list_planitem);
+        listView.setOnItemClickListener(new ListView.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                item_layout_itemsOpt item_layout_itemsOpt_a = view.findViewById(R.id.list_itemopt);
+                Log.d(TAG,"修改任务");
+
+            }
+        });
+        List<String> strs = new ArrayList<String>();
+        for( PlanItem planItem : planItemList ){
+            strs.add(planItem.getPlan_name());
+        }
+        //getResources().getStringArray(R.array.names)
+        PlanItemAdapter planItemAdapter = new PlanItemAdapter(MainActivity.this,R.layout.activity_item_layout,planItemList);
+        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.support_simple_spinner_dropdown_item,strs);
+        listView.setAdapter(planItemAdapter);
+
+        
+    }
+
+    /***
+     * 设置事件
+     */
+    private void setEvent(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -55,38 +92,15 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
-        ListView listView = findViewById(R.id.list_planitem);
-
-        List<String> strs = new ArrayList<String>();
-        for( PlanItem planItem : planItemList ){
-            strs.add(planItem.getPlan_name());
-        }
-        //getResources().getStringArray(R.array.names)
-        PlanItemAdapter planItemAdapter = new PlanItemAdapter(MainActivity.this,R.layout.activity_item_layout,planItemList);
-        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.support_simple_spinner_dropdown_item,strs);
-        listView.setAdapter(planItemAdapter);
-
-        
     }
+
 
     @Override
     public void onBackPressed() {
@@ -134,7 +148,10 @@ public class MainActivity extends AppCompatActivity
             case R.id.m_plan_alreadyplan:
                 startActivity(new Intent(MainActivity.this,Already_plan.class));
                 break;
+            case R.id.m_plan_alreadydel:
+                //删除项列表
 
+                break;
 
 
 

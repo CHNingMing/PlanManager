@@ -8,3 +8,13 @@ PHP_PlanManager/PlanManager/\.project
 PHP_PlanManager/RemoteSystemsTempFiles/
 
 PHP_PlanManager/\.metadata/
+
+.idea/
+
+.metadata/
+
+PlanManager.iml
+
+*.iml
+
+RemoteSystemsTempFiles/

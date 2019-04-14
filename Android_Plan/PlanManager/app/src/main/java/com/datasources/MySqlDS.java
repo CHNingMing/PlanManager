@@ -1,7 +1,9 @@
 package com.datasources;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import com.entity.PlanItem;
@@ -148,17 +150,40 @@ public class MySqlDS {
 
     }
 
+    /**
+     * 新增
+     * @param newObj
+     * @param <T>
+     * @return
+     */
+    public static <T> T insert(final Object newObj) {
+
+        Thread t = new Thread(){
+            @Override
+            public void run() {
+                t_objs.put("insertObj",MySqlDataUtil.insert(newObj));
+            }
+        };
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return (T) t_objs.get("insertObj");
+    }
+
     /***
      * 更新数据
      * 保证实体主键描述属性不为null,非空项不为null
      * @param newObj 更新数据对象
      * @return
      */
-    public static <T> T update(final Object newObj){
+    public static <T> T update(final Object newObj, final String where){
         Thread t = new Thread(){
             @Override
             public void run() {
-                t_objs.put("updateObj",MySqlDataUtil.update(newObj));
+                t_objs.put("updateObj",MySqlDataUtil.update(newObj,where));
             }
         };
         t.start();
@@ -174,6 +199,9 @@ public class MySqlDS {
             return null;
         }
     }
+    public static <T> T update(final Object newObj){
+        return update(newObj,null);
+    }
 
 
 
@@ -188,6 +216,14 @@ public class MySqlDS {
         return connection != null;
     }
 
+    /**
+     * Toast打印消息
+     * @param msg
+     * @param context
+     */
+    public static void printMsg(String msg, Context context){
+        Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();
+    }
 
 
 
@@ -344,6 +380,8 @@ class Conn implements Runnable {
             e.printStackTrace();
         }
     }
+
+
 }
 
 

@@ -18,13 +18,12 @@
         >
         <TextView
             android:id="@+id/t_plan_state"
-            android:layout_width="222dp"
+            android:layout_width="220dp"
             android:layout_height="22dp"
-            android:layout_marginLeft="55dp"
+            android:layout_marginLeft="35dp"
             android:text="TextView"
             app:layout_constraintLeft_toLeftOf="@id/list_itemopt"
             app:layout_constraintTop_toTopOf="@id/img_head"
-
             />
         <com.example.root.planmanager.ItemImageItemsOpt
             android:id="@+id/img_delplan"
@@ -34,13 +33,30 @@
             app:layout_constraintLeft_toRightOf="@id/t_plan_state"
             app:layout_constraintTop_toTopOf="@id/t_plan_state"
             />
+        <!-- 任务失败 -->
+        <com.example.root.planmanager.ItemImageItemsOpt
+            android:id="@+id/img_fail"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            app:layout_constraintLeft_toRightOf="@id/img_delplan"
+            app:layout_constraintTop_toTopOf="@id/img_delplan"
+            />
+        <!-- 任务完成 -->
+        <com.example.root.planmanager.ItemImageItemsOpt
+            android:id="@+id/img_success"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            app:layout_constraintLeft_toRightOf="@id/img_fail"
+            app:layout_constraintTop_toTopOf="@id/img_fail"
+            />
+
         <com.example.root.planmanager.ItemImageItemsOpt
             android:id="@+id/img_head"
             android:layout_width="100px"
             android:layout_height="100px"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_margin="50px"
+            android:layout_marginTop="50px"
             />
 <!--        <ImageView
             android:id="@+id/img_head"
@@ -55,7 +71,7 @@
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="222dp"
+            android:layout_width="200dp"
             android:layout_height="16dp"
             app:layout_constraintLeft_toLeftOf="@id/t_plan_state"
             app:layout_constraintTop_toBottomOf="@id/t_plan_state"

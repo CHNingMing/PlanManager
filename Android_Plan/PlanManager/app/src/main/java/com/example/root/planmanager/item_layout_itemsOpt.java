@@ -14,6 +14,7 @@ import android.widget.Toast;
 /**
  * Created by root on 19-4-6.
  * 主要功能，通过此类配合控件实现自定义属性
+ * 描述列表中其中一项
  */
 /*
     extends FrameLayout

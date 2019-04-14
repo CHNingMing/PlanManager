@@ -10,6 +10,9 @@ import android.widget.ImageView;
  * Created by root on 19-4-7.
  */
 
+/***
+ * 描述列表中其中一项中图片属性，图片显示通过Apapter动态设置，用这个类代替ImageView
+ */
 public class ItemImageItemsOpt extends android.support.v7.widget.AppCompatImageView {
 
     private Integer plan_id = -1;

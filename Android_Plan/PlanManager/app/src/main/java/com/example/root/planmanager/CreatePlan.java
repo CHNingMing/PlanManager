@@ -6,7 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.datasources.MySqlDS;
+import com.entity.PlanItem;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class CreatePlan extends AppCompatActivity {
 
@@ -24,9 +31,22 @@ public class CreatePlan extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //保存任务操作
-                
-                Toast.makeText(CreatePlan.this,"保存成功!",Toast.LENGTH_LONG).show();
-                finish();
+                //标题
+                TextView txtplanname = findViewById(R.id.e_plan_name);
+                //详细
+                TextView txtplaninfo = findViewById(R.id.e_planinfo);
+                PlanItem planItem = new PlanItem();
+                planItem.setPlan_state(0);
+                planItem.setCreate_date(new Timestamp(System.currentTimeMillis()));
+                planItem.setPlan_info(txtplaninfo.getText().toString());
+                planItem.setPlan_name(txtplanname.getText().toString());
+                Object rsObj = MySqlDS.insert(planItem);
+                if( rsObj != null ){
+                    Toast.makeText(CreatePlan.this,"保存成功!",Toast.LENGTH_LONG).show();
+                    finish();
+                }else{
+                    Toast.makeText(CreatePlan.this,"==保存失败!==",Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

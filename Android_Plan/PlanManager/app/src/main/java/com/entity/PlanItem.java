@@ -19,6 +19,16 @@ public class PlanItem {
     private Timestamp create_date;
     @DBField(field_type = FieldType.Int)
     private Integer plan_state;
+    @DBField(field_type = FieldType.Boolean)
+    private boolean del_flag;
+
+    public boolean getDel_flag() {
+        return del_flag;
+    }
+
+    public void setDel_flag(boolean del_flag) {
+        this.del_flag = del_flag;
+    }
 
     public Integer getPlan_state() {
         return plan_state;

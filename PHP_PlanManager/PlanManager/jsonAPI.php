@@ -27,7 +27,7 @@
 
 
         $funName = $_SERVER['REQUEST_URI'];
-
+        
 
         //去掉请求连接，只剩下最后一个url路径，来当执行方法
         $funName_2 = strrchr($funName,"/");

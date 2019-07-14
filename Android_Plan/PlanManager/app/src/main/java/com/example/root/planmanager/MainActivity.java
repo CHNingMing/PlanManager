@@ -1,8 +1,11 @@
 package com.example.root.planmanager;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,6 +31,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
+    public static AppCompatActivity currActivity;
+
+    public static Integer itemState = 0;
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +45,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         //设置事件
         setEvent();
-
-
+        currActivity = this;
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -64,16 +70,26 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        List<String> strs = new ArrayList<String>();
-        for( PlanItem planItem : planItemList ){
+        loadViewData(listView,planItemList);
+
+        //getResources().getStringArray(R.array.names)
+
+        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.support_simple_spinner_dropdown_item,strs);
+
+    }
+
+    public static void loadViewData(ListView listView,List<PlanItem> planItems,AppCompatActivity p_currActivity,int p_resource){
+        List<String> strs = new ArrayList<>();
+        for( PlanItem planItem : planItems ){
             strs.add(planItem.getPlan_name());
         }
-        //getResources().getStringArray(R.array.names)
-        PlanItemAdapter planItemAdapter = new PlanItemAdapter(MainActivity.this,R.layout.activity_item_layout,planItemList);
-        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.support_simple_spinner_dropdown_item,strs);
+        AppCompatActivity appCompatActivity = p_currActivity != null ? p_currActivity : currActivity;
+        int resource = p_resource == -1 ? R.layout.activity_item_layout : p_resource;
+        PlanItemAdapter planItemAdapter = new PlanItemAdapter(currActivity,resource,planItems);
         listView.setAdapter(planItemAdapter);
-
-        
+    }
+    public static void loadViewData(ListView listView,List<PlanItem> planItems){
+        loadViewData(listView,planItems,null,-1);
     }
 
     /***
@@ -97,8 +113,18 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        Button btn_reload = findViewById(R.id.btn_reload);
+        btn_reload.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                List<PlanItem> planItemList = PlanData.getPlanItemsByState(true,0,1,2);
+                ListView listView = findViewById(R.id.list_planitem);
+                loadViewData(listView,planItemList);
 
 
+            }
+        });
     }
 
 

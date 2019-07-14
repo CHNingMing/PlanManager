@@ -12,14 +12,25 @@ import java.util.List;
 
 public class Already_plan extends AppCompatActivity {
 
+    public static AppCompatActivity currActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MainActivity.itemState = 1;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_already_plan);
+        currActivity = this;
+        loadListViewData();
+    }
+    public static void loadListViewData(){
         List<PlanItem> planItemList = PlanData.getPlanItemsByState(false,3,4);
-        ListView listView = findViewById(R.id.list_alreadyplan);
-        PlanItemAdapter planItemAdapter = new PlanItemAdapter(this,R.layout.activity_item_layout,planItemList);
-        listView.setAdapter(planItemAdapter);
+        ListView listView = Already_plan.currActivity.findViewById(R.id.list_alreadyplan);
+        MainActivity.loadViewData(listView,planItemList,currActivity,R.id.list_alreadyplan);
+    }
 
+    @Override
+    protected void onStop() {
+        MainActivity.itemState = 0;
+        super.onStop();
     }
 }

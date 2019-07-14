@@ -24,7 +24,8 @@
         </activity>
         <activity android:name=".CreatePlan" />
         <activity android:name=".Already_plan" />
-        <activity android:name=".item_layout"></activity>
+        <activity android:name=".item_layout" />
+        <activity android:name=".PlanInfo"></activity>
     </application>
 
 </manifest>

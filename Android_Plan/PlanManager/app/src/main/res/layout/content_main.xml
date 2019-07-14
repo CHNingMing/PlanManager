@@ -21,7 +21,7 @@
 
     <EditText
         android:id="@+id/t_editText"
-        android:layout_width="219dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
@@ -35,6 +35,13 @@
         android:text="搜索"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toRightOf="@id/t_editText"/>
+    <Button
+        android:id="@+id/btn_reload"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:text="刷新"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/btn_search"/>
     <TextView
         android:id="@+id/t_waitPlan"
         android:layout_width="wrap_content"

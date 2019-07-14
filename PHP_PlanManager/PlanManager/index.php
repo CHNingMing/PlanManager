@@ -13,26 +13,23 @@
     }
 
 
-
-
-
     /*
         测试数据
         phpinfo();
 
     */
-    echo exec ('./main1');
 ?>
 
 <!--
     后期全改成JSON传值
     
 -->
-
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>任务列表</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<meta content="text/html;charset=utf-8"/>
 		<!-- VUE -->
 		<script type="text/javascript" src="js/vue.js"></script>
 		<!-- Amaze UI -->

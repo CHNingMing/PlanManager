@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteRule index$ index.php
+	RewriteRule json_api/[a-zA-Z_]+$ jsonAPI.php/%{REMOTE_HOST}
+	RewriteRule jsonp_api/[a-zA-Z_]+$ jsonAPI.php
+	ErrorDocument 404 /404.html
+</IfModule> 
+
+
+
